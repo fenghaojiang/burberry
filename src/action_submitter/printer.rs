@@ -1,6 +1,7 @@
 use std::fmt::Debug;
 
 use crate::ActionSubmitter;
+use async_trait::async_trait;
 
 #[derive(Debug, Clone)]
 pub struct ActionPrinter<A> {
@@ -15,11 +16,12 @@ impl<A> Default for ActionPrinter<A> {
     }
 }
 
+#[async_trait]
 impl<A> ActionSubmitter<A> for ActionPrinter<A>
 where
     A: Send + Clone + Debug + Sync + 'static,
 {
-    fn submit(&self, a: A) {
+    async fn submit(&self, a: A) {
         tracing::info!("action: {a:?}");
     }
 }

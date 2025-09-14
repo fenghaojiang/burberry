@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use crate::executor::telegram_message::{Message, TelegramMessageDispatcher};
 use crate::ActionSubmitter;
+use async_trait::async_trait;
 
 pub struct TelegramSubmitter {
     executor: Arc<TelegramMessageDispatcher>,
@@ -30,8 +31,9 @@ impl Default for TelegramSubmitter {
     }
 }
 
+#[async_trait]
 impl ActionSubmitter<Message> for TelegramSubmitter {
-    fn submit(&self, action: Message) {
+    async fn submit(&self, action: Message) {
         let action = if let Some((bot_token, chat_id, thread_id)) = &self.redirect_to {
             Message {
                 bot_token: bot_token.clone(),
@@ -44,16 +46,6 @@ impl ActionSubmitter<Message> for TelegramSubmitter {
         };
 
         let executor = self.executor.clone();
-
-        std::thread::spawn(move || {
-            send_message(executor, action);
-        })
-        .join()
-        .unwrap();
+        executor.send_message(action).await;
     }
-}
-
-#[tokio::main(flavor = "current_thread")]
-async fn send_message(executor: Arc<TelegramMessageDispatcher>, action: Message) {
-    executor.send_message(action).await;
 }

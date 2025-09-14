@@ -15,11 +15,12 @@ pub trait Collector<E>: Send + Sync {
     async fn get_event_stream(&self) -> Result<CollectorStream<'_, E>>;
 }
 
+#[async_trait]
 pub trait ActionSubmitter<A>: Send + Sync
 where
     A: Send + Sync + Clone + 'static,
 {
-    fn submit(&self, action: A);
+    async fn submit(&self, action: A);
 }
 
 #[async_trait]

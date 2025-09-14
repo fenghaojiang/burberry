@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use alloy::{providers::Provider,  rpc::types::eth::Block};
+use alloy::{providers::Provider, rpc::types::eth::Block};
 use async_trait::async_trait;
 use futures::StreamExt;
 use tracing::{error, warn};

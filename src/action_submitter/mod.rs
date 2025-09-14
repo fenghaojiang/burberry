@@ -15,6 +15,7 @@ pub use telegram::TelegramSubmitter;
 use tokio::sync::broadcast::Sender;
 
 use crate::ActionSubmitter;
+use async_trait::async_trait;
 
 #[derive(Clone)]
 pub struct ActionChannelSubmitter<A> {
@@ -27,11 +28,12 @@ impl<A> ActionChannelSubmitter<A> {
     }
 }
 
+#[async_trait]
 impl<A> ActionSubmitter<A> for ActionChannelSubmitter<A>
 where
     A: Send + Sync + Clone + Debug + 'static,
 {
-    fn submit(&self, action: A) {
+    async fn submit(&self, action: A) {
         match self.sender.send(action) {
             Ok(_) => (),
             Err(e) => tracing::error!("error submitting action: {:?}", e),
